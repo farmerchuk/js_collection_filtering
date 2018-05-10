@@ -91,7 +91,7 @@ var carInfoTemplate = Handlebars.compile(carInfoScript);
 displayFilters(cars);
 displayCars(cars);
 
-$('form').on('submit', function(e) {
+$('form').on('change', 'select', function(e) {
   e.preventDefault();
   var $form = $('form');
   var filterParams = $form.serializeArray();
@@ -99,4 +99,11 @@ $('form').on('submit', function(e) {
 
   displayFilters(filteredCars);
   displayCars(filteredCars);
+});
+
+$('form').on('submit', function(e) {
+  e.preventDefault();
+
+  displayFilters(cars);
+  displayCars(cars);
 });
