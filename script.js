@@ -10,15 +10,66 @@ function getCarTypes(cars, type) {
   });
 }
 
+function getCarFilterOptions(cars) {
+  return {
+    makes: getCarTypes(cars, 'make'),
+    models: getCarTypes(cars, 'model'),
+    years: getCarTypes(cars, 'year'),
+    prices: getCarTypes(cars, 'price'),
+  }
+}
+
+function getCarFilterOptionsHtml(carFilterOptions) {
+  return {
+    makes: filterOptionsTemplate({ options: carFilterOptions.makes }),
+    models: filterOptionsTemplate({ options: carFilterOptions.models }),
+    years: filterOptionsTemplate({ options: carFilterOptions.years }),
+    prices: filterOptionsTemplate({ options: carFilterOptions.prices }),
+  }
+}
+
+function getFilteredCars(cars, filterParams) {
+  var make = filterParams.find(param => param.name === 'make').value;
+  var model = filterParams.find(param => param.name === 'model').value;
+  var year = filterParams.find(param => param.name === 'year').value;
+  var price = filterParams.find(param => param.name === 'price').value;
+
+  return filterCarsBy(cars, make, model, year, price);
+}
+
 function filterCarsBy(cars, make, model, year, price) {
   var filteredCars = cars;
 
-  if (make !== 'All') filteredCars = cars.filter(car => car.make === make);
-  if (model !== 'All') filteredCars = cars.filter(car => car.model === model);
-  if (year !== 'All') filteredCars = cars.filter(car => car.year === year);
-  if (price !== 'All') filteredCars = cars.filter(car => car.price === price);
+  if (make !== 'All') filteredCars = filteredCars.filter(car => car.make === make);
+  if (model !== 'All') filteredCars = filteredCars.filter(car => car.model === model);
+  if (year !== 'All') filteredCars = filteredCars.filter(car => car.year === Number(year));
+  if (price !== 'All') filteredCars = filteredCars.filter(car => car.price === Number(price));
 
   return filteredCars;
+}
+
+function renderCarFilterOptions(carFilterOptionsHtml) {
+  $('select[name="make"]').html(carFilterOptionsHtml.makes);
+  $('select[name="model"]').html(carFilterOptionsHtml.models);
+  $('select[name="year"]').html(carFilterOptionsHtml.years);
+  $('select[name="price"]').html(carFilterOptionsHtml.prices);
+}
+
+function renderCarFilterResults(carsInfoHtml) {
+  $('#results ul').html(carsInfoHtml);
+}
+
+function displayFilters(cars) {
+  var carFilterOptions = getCarFilterOptions(cars);
+  var carFilterOptionsHtml = getCarFilterOptionsHtml(carFilterOptions);
+
+  renderCarFilterOptions(carFilterOptionsHtml);
+}
+
+function displayCars(cars) {
+  var carsInfoHtml = carInfoTemplate({ cars: cars });
+
+  renderCarFilterResults(carsInfoHtml);
 }
 
 var cars = [
@@ -31,38 +82,21 @@ var cars = [
   { make: 'Audi', image: 'images/audi-a4-2013.jpg', model: 'A4', year: 2013, price: 26000 },
 ];
 
-var makes = getCarTypes(cars, 'make');
-var models = getCarTypes(cars, 'model');
-var years = getCarTypes(cars, 'year');
-var prices = getCarTypes(cars, 'price');
-
 var filterOptionsScript = $('script[data-id="filter-options"]').html();
-var filterOptionsTemplate = Handlebars.compile(filterOptionsScript);
-var makeFilterOptionsHtml = filterOptionsTemplate({ options: makes });
-var modelsFilterOptionsHtml = filterOptionsTemplate({ options: models });
-var yearsFilterOptionsHtml = filterOptionsTemplate({ options: years });
-var pricesFilterOptionsHtml = filterOptionsTemplate({ options: prices });
-
 var carInfoScript = $('script[data-id="car-info"]').html();
-var carInfoTemplate = Handlebars.compile(carInfoScript);
-var carsInfoHtml = carInfoTemplate({ cars: cars });
 
-$('select[name="make"]').html(makeFilterOptionsHtml);
-$('select[name="model"]').html(modelsFilterOptionsHtml);
-$('select[name="year"]').html(yearsFilterOptionsHtml);
-$('select[name="price"]').html(pricesFilterOptionsHtml);
-$('#results ul').html(carsInfoHtml);
+var filterOptionsTemplate = Handlebars.compile(filterOptionsScript);
+var carInfoTemplate = Handlebars.compile(carInfoScript);
+
+displayFilters(cars);
+displayCars(cars);
 
 $('form').on('submit', function(e) {
   e.preventDefault();
   var $form = $('form');
   var filterParams = $form.serializeArray();
-  var make = filterParams.find(param => param.name === 'make').value;
-  var model = filterParams.find(param => param.name === 'model').value;
-  var year = filterParams.find(param => param.name === 'year').value;
-  var price = filterParams.find(param => param.name === 'price').value;
-  var filteredCars = filterCarsBy(cars, make, model, year, price);
-  var filteredCarsHtml = carInfoTemplate({ cars: filteredCars });
+  var filteredCars = getFilteredCars(cars, filterParams);
 
-  $('#results ul').html(filteredCarsHtml);
+  displayFilters(filteredCars);
+  displayCars(filteredCars);
 });
