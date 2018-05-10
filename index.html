@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Filter Cars</title>
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+  </head>
+
+  <body>
+
+    <aside id="filters">
+
+      <h1>Car Filters</h1>
+
+      <form action="#" method="post">
+
+        <fieldset>
+
+          <ul>
+
+            <li>
+              <label for="make">Car Make</label>
+              <select name="make" id="make">
+              </select>
+            </li>
+
+            <li>
+              <label for="model">Car Model</label>
+              <select name="model" id="model">
+              </select>
+            </li>
+
+            <li>
+              <label for="year">Car Year</label>
+              <select name="year" id="year">
+              </select>
+            </li>
+
+            <li>
+              <label for="price">Car Price</label>
+              <select name="price" id="price">
+              </select>
+            </li>
+
+          </ul>
+
+        </fieldset>
+
+        <button type="submit" name="button">Filter</button>
+
+      </form>
+
+    </aside>
+
+    <section id="results">
+
+      <ul>
+      </ul>
+
+    </section>
+
+    <script type="text/x-handlebars" data-id="filter-options">
+      <option value="All">All</option>
+      {{#each options}}
+        <option value="{{option}}">{{option}}</option>
+      {{/each}}
+    </script>
+
+    <script type="text/x-handlebars" data-id="car-info">
+      {{#each cars}}
+        <li>
+          <img src="{{image}}">
+          <h2>{{year}} {{make}} {{model}}</h2>
+          <h3>Price: {{price}}</h3>
+        </li>
+      {{/each}}
+    </script>
+
+    <script src="script.js"></script>
+
+  </body>
+
+</html>
